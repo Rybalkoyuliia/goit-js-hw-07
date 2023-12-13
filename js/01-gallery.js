@@ -19,26 +19,31 @@ const markup = galleryItems
 
 galleryList.innerHTML = markup;
 
-galleryList.addEventListener("click", onImageItemClick);
+const instance = basicLightbox.create(
+  `<img width = 1400 height 900 src = src="">`,
+  {
+    onShow: () => {
+      console.log("Open");
+      document.addEventListener("keydown", keyBordPress);
+    },
 
+    onClose: () => {
+      document.removeEventListener("keydown", keyBordPress);
+    },
+  }
+);
 function onImageItemClick(event) {
   event.preventDefault();
   const currentItem = event.target;
   if (currentItem.nodeName !== "IMG") return;
-  const img = currentItem.dataset.source;
-  const instance = basicLightbox.create(`
-  <img src="${img}" alt="${currentItem.alt}">
-`);
-
+  instance.element().querySelector("IMG").src = event.target.dataset.source;
   instance.show();
+}
 
-  document.addEventListener("keydown", handleModal);
+galleryList.addEventListener("click", onImageItemClick);
 
-  function handleModal(closeEvent) {
-    if (closeEvent.key !== "Escape") {
-      return;
-    }
+function keyBordPress(evt) {
+  if (evt.key === "Escape") {
     instance.close();
-    document.removeEventListener("keydown", handleModal);
   }
 }
